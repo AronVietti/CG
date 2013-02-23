@@ -1,0 +1,11 @@
+{
+  "name": "casparCG",
+  "description": "Caspar CG for Node",
+  "version": "0.0.1",
+  "author": {
+    "name": "Aron Vietti"
+  },
+  "dependencies": {
+    "underscore": "*"
+  }
+}

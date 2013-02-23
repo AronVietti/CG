@@ -1,0 +1,201 @@
+
+<!-- saved from url=(1044)http://ads.pubmatic.com/AdServer/js/adTagInfo.html#defaultUrl=http%3A%2F%2Fshowads.pubmatic.com%2FAdServer%2FAdServerServlet%3FkadNetwork%C3%80609%C2%B0defcount%C3%801%C2%B0lastdefadnwkID%C3%80609%C2%B0pubId%C3%8028388%C2%B0siteId%C3%8028389%C2%B0adId%C3%8023957%C2%B0kadheight%C3%8090%C2%B0kadwidth%C3%80728%C2%B0inIframe%C3%801%C2%B0operId%C3%803%C2%B0kbgColor%C3%80ffffff%C2%B0ktextColor%C3%80000000%C2%B0klinkColor%C3%800000EE%C2%B0kltstamp%C3%802013-1-24%2017%3A4%3A32%C2%B0timezone%C3%80-8%C2%B0screenResolution%C3%801920x1080%C2%B0adPosition%C3%801151x588%C2%B0adVisibility%C3%802%C2%B0frameName%C3%80http_www_wolframalpha_cominputpubmatic_footer_jsp_komli_ads_frame_0_28388_28389%C2%B0pmUniAdId%C3%80top_0_0%C2%B0ranreq%C3%800.24025316745974123%C2%B0pageURL%C3%80http%253A%252F%252Fwww.wolframalpha.com%252Finput%252Fpubmatic_footer.jsp%C2%B0refurl%C3%80http%253A%252F%252Fwww.wolframalpha.com%252Finput%252F&frameName=http_www_wolframalpha_cominputpubmatic_footer_jsp_komli_ads_frame_0_28388_28389&adheight=90&adwidth=728&uAdId=top_0_0 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- Copyright PubMatic. 2006-2012. All Rights Reserved, do not copy or reuse -->
+<script type="text/javascript">
+	document.domain = "pubmatic.com";
+	window.PubMatic = window.PubMatic || {};
+	/*  BEG : PubMatic Util Class Definaion*/
+	PubMatic.UtilClass = PubMatic.UtilClass || function(){};
+	PubMatic.UtilClass.prototype = {
+		/*  BEG : URL Params Util */
+		urlCollection : {}
+		,parseUrlForParams : function(locScope){
+			var searchStr = locScope.location.search
+				,l = searchStr.length
+				,params = searchStr.substring(1,l).split("&")
+				,c
+				,pColl = {}
+				,pName
+				,pVal
+				,param;
+			l = params.length;
+			for(c=0;c<l;c++){
+				param = params[c].split("=");
+				pName = param[0];
+				pVal  = param[1];
+				pColl[pName] = pVal || "";
+			}
+			this.urlCollection[locScope] = pColl;
+			return pColl;
+		}
+		,getUrlParam  : function(pName,locScope){
+			locScope = locScope || window;
+			var pColl = this.urlCollection[locScope];
+			if(!pColl){
+				pColl = this.parseUrlForParams(locScope);
+			}
+			return pColl[pName] || "";
+		}
+		,getAllUrlParams : function(locScope){
+			var pColl = this.urlCollection[locScope];
+			if(!pColl){
+				pColl = this.parseUrlForParams(locScope);
+			}
+			return pColl;
+		}
+		,getQueryStringForObject  : function(obj){	
+			var pName , pVal , qStr = [];
+			for(pName in obj){
+				if(obj.hasOwnProperty(pName)){
+					pVal = obj[pName];
+					if(pVal){
+						qStr.push(pName + "=" + pVal);
+					}
+				}
+			}
+			return qStr.join("&");
+		}
+		/*  END : URL Params Util */
+		/*  END : postMessage Util */
+	};	
+	PubMatic.util = PubMatic.util || new PubMatic.UtilClass();	
+	PubMatic.AdTagInfoClass = function (){
+		var info = this.getInfoObj();
+	};
+	/*  BEG : postMessage Util */
+	PubMatic.AdTagInfoClass.prototype = {
+		info			: {}
+		,nwIds		  : null
+		,timeOutId	  : null
+		,lastHashMsg	: null
+		,updateAdTagObj : function () {
+			var hashStr = decodeURIComponent(document.location.hash)
+				,s1	 = hashStr.replace("#" , "").split("&")	   //First Level Split Array
+				,l	  = s1.length //Number of entities. Length of s1
+				,s2				 //Second Level Split Array
+				,id				 //Id of the property
+				,val				//Value of the property
+				,vLen			   //Length of val
+				,andSymReg  = /\xb0/g
+				,eqlSymReg  = /\xc0/g
+			;
+			while(l--){
+				s2 = s1[l] ? s1[l].split("=") : "";
+				id = s2[0] ? s2[0] : false;
+				val= s2[1] ? s2[1] : null;
+				if(val) {
+					val	 = val.replace( andSymReg , "&" )
+								.replace( eqlSymReg , "=" );
+					vLen	= val.length;
+					//This condition ensures that the msg in array.
+					if ( val.indexOf("[") === 0 && val.indexOf("]") === vLen - 1 ) {
+						if (vLen - 1 === 1) {
+							val = [];
+						} else {
+							val = val.substring(1,vLen - 1).split(',');
+						}
+					}
+				}
+				if ( id ) { this.info[id] = val; }
+			}
+			this.lastHashMsg = document.location.hash;
+			//Mark if it is ready or not.
+			if (this.info.uAdId) {
+				this.isReady = true;
+			}
+			return this.info;
+			//Warning : Dead Code Ahead.
+			//Take care of nwIds.
+			if (this.info.nwIds) {
+				this.info.nwIds = this.info.nwIds instanceof Array 
+								? this.info.nwIds
+								: (this.info.nwIds ? [this.info.nwIds] : []); 
+			} else {
+				this.info.nwIds = [];
+			}
+			this.nwIds = this.info.nwIds;
+			//Take care of camIds
+			this.info.camIds = this.info.camIds || [];
+			//Take care of ecpms
+			this.info.ecpms = this.info.ecpms || [];
+			//Take care of acpms
+			this.info.acpms = this.info.acpms || [];
+			//Take care of lastDefNwId
+			this.info.lastDefNwId	= this.info.lastDefNwId || 0;
+			//Take care of defcount
+			this.info.defCnt		= this.info.defCnt || 0;
+			
+		}
+		,refresh		: function () {
+			if (this.lastHashMsg != document.location.hash) {
+				this.lastHashMsg = document.location.hash + ""
+				this.updateAdTagObj();
+			}
+		}
+		,getInfoObj	 : function () {
+			this.refresh();
+			return this.info;
+		}
+		,getParamsObj   : function () {
+			if (this.getParamsObj.cache) {
+				return this.getParamsObj.cache;
+			}
+			var str = this.info.uParams || ""
+				,o  = {}
+				,ar = str.split("&")
+				,l  = ar.length
+				,pA;
+			while (l--) {
+				pA = ar[l].split("=");
+				o[pA[0]] = pA[1];
+			}
+			this.getParamsObj.cache = o;
+			return o;
+		}
+	};
+	window.adTag = new PubMatic.AdTagInfoClass();	
+	PubMatic.getAdTagObj	= function () {
+		adTag.refresh();
+		return adTag;
+	};
+</script></head>
+<body style="height:0px;width:0px;" marginwidth="0" marginheight="0">
+	<!-- Beg of UT Code -->
+	<div>
+		<script type="text/javascript">
+			function alertInfoObj () {
+				adTag.getInfoObj();
+				alert(getObjStr(adTag));
+			}
+			function getObjStr (o) {
+				var k, p ,msg = [];
+				for (k in o) {
+					p = o[k];
+					switch (typeof p) {
+						case 'function' :
+							msg.push(k + " :: API");
+							break;
+						case 'object' :
+							if ( p ) {
+								if ( p instanceof Array ) {
+									k = k + "(Array:Length: " + p.length + ")";
+								} else {
+									msg.push(k + " :: Object Begins here ----");
+									msg.push(getObjStr(p));
+									msg.push(k + " :: Object Ends here ------");
+									break;
+								}
+							}
+						default :
+							msg.push(k + " :: " + p);
+					}
+				}
+				return msg.join("\n");
+			}
+		</script>
+		<input type="button" onclick="alertInfoObj()" value="Alert Info Object">
+	</div>
+	<!-- End of UT Code -->
+
+</body></html>
